@@ -11,28 +11,37 @@ import java.util.stream.Collectors;
 
 public class TaskManager {
 
+    //    -createUser -fn='FirstName' -ln='LastName' -un='UserName'
+    public static final String CREATE_USER_COMMAND = "-createUser";
+    //    -showAllUsers
+    public static final String SHOW_ALL_USERS_COMMAND = "-showAllUsers";
+    //    -addTask -un='UserName' -tt='TaskTitle' -td='TaskDescription'
+    public static final String ADD_TASK_COMMAND = "-addTask";
+    //    -showTasks -un='UserName'
+    public static final String SHOW_TASKS_COMMAND = "-showTasks";
+
     private final UserFileRepositoryImpl userFileRepository = new UserFileRepositoryImpl();
     private final UserService userService = new UserServiceImpl(userFileRepository);
 
     public void parseCommandLine(String[] commandLine) {
         final String command = commandLine[0];
         switch (command) {
-            case "-createUser":
+            case CREATE_USER_COMMAND:
                 userService.createUser(
                         getStringValue(commandLine[3]),
                         getStringValue(commandLine[2]),
                         getStringValue(commandLine[1]));
                 break;
-            case "-showAllUsers":
+            case SHOW_ALL_USERS_COMMAND:
                 System.out.println(formatUsers(userService.getAllUsers()));
                 break;
-            case "-addTask":
+            case ADD_TASK_COMMAND:
                 userService.addTaskFor(
                         getStringValue(commandLine[2]),
                         getStringValue(commandLine[3]),
                         getStringValue(commandLine[1]));
                 break;
-            case "-showTasks":
+            case SHOW_TASKS_COMMAND:
                 System.out.println(userService.getTasksFor(getStringValue(commandLine[1])));
                 break;
             default:
