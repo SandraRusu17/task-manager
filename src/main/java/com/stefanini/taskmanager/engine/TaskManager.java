@@ -20,6 +20,8 @@ public class TaskManager {
     public static final String ADD_TASK_COMMAND = "-addTask";
     //    -showTasks -un='UserName'
     public static final String SHOW_TASKS_COMMAND = "-showTasks";
+    //    -deleteTask -un='UserName' -tt='TaskTitle'
+    public static final String DELETE_TASK_COMMAND = "-deleteTask";
 
     private final UserFileRepositoryImpl userFileRepository = new UserFileRepositoryImpl();
     private final UserService userService = new UserServiceImpl(userFileRepository);
@@ -53,6 +55,15 @@ public class TaskManager {
                     userService.addTaskFor(
                             getStringValue(commandLine[2]),
                             getStringValue(commandLine[3]),
+                            getStringValue(commandLine[1]));
+                } catch (UserNotFoundException e) {
+                    System.out.println("Oops. User with username " + commandLine[1] + " not found!");
+                }
+                break;
+            case DELETE_TASK_COMMAND:
+                try {
+                    userService.deleteTaskByTitleFor(
+                            getStringValue(commandLine[2]),
                             getStringValue(commandLine[1]));
                 } catch (UserNotFoundException e) {
                     System.out.println("Oops. User with username " + commandLine[1] + " not found!");

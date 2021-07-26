@@ -24,7 +24,6 @@ public class UserServiceImpl implements UserService {
         } else {
             System.out.println("Username " + username + " already exists!");
         }
-
     }
 
     @Override
@@ -40,6 +39,15 @@ public class UserServiceImpl implements UserService {
     public List<Task> getTasksFor(String username) throws UserNotFoundException {
         User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         return user.getTasks();
+    }
+
+    //one more logical feature
+    @Override
+    public void deleteTaskByTitleFor(String taskTitle, String username) throws UserNotFoundException {
+        User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        user.getTasks().removeIf(t -> t.getTitle().equals(taskTitle));
+        userRepository.update(user);
+        System.out.println(taskTitle + " deleted successfully!");
     }
 
     @Override

@@ -13,5 +13,8 @@ public interface UserService {
 
     List<Task> getTasksFor(String username) throws UserNotFoundException;
 
+    //one more logical feature
+    void deleteTaskByTitleFor(String taskTitle, String username) throws UserNotFoundException;
+
     List<User> getAllUsers();
 }
