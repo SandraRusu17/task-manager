@@ -1,5 +1,6 @@
 package com.stefanini.taskmanager.engine;
 
+import com.stefanini.taskmanager.exceptions.UserNotFoundException;
 import com.stefanini.taskmanager.model.User;
 import com.stefanini.taskmanager.repo.UserFileRepositoryImpl;
 import com.stefanini.taskmanager.service.UserService;
@@ -24,9 +25,17 @@ public class TaskManager {
     private final UserService userService = new UserServiceImpl(userFileRepository);
 
     public void parseCommandLine(String[] commandLine) {
+        if(commandLine.length < 1){
+            System.out.println("Oops. Please use one of the following commands: -createUser -showAllUsers -addTask -showTasks");
+            System.exit(0);
+        }
         final String command = commandLine[0];
         switch (command) {
             case CREATE_USER_COMMAND:
+                if(commandLine.length < 4){
+                    System.out.println("Oops. Please refer to the usage of the command : -createUser -fn='FirstName' -ln='LastName' -un='UserName'");
+                    break;
+                }
                 userService.createUser(
                         getStringValue(commandLine[3]),
                         getStringValue(commandLine[2]),
@@ -36,13 +45,29 @@ public class TaskManager {
                 System.out.println(formatUsers(userService.getAllUsers()));
                 break;
             case ADD_TASK_COMMAND:
-                userService.addTaskFor(
-                        getStringValue(commandLine[2]),
-                        getStringValue(commandLine[3]),
-                        getStringValue(commandLine[1]));
+                if(commandLine.length < 4){
+                    System.out.println("Oops. Please refer to the usage of the command : -addTask -un='UserName' -tt='TaskTitle' -td='TaskDescription'");
+                    break;
+                }
+                try {
+                    userService.addTaskFor(
+                            getStringValue(commandLine[2]),
+                            getStringValue(commandLine[3]),
+                            getStringValue(commandLine[1]));
+                } catch (UserNotFoundException e) {
+                    System.out.println("Oops. User with username " + commandLine[1] + " not found!");
+                }
                 break;
             case SHOW_TASKS_COMMAND:
-                System.out.println(userService.getTasksFor(getStringValue(commandLine[1])));
+                if(commandLine.length < 2){
+                    System.out.println("Oops. Please refer to the usage of the command : -showTasks -un='UserName'");
+                    break;
+                }
+                try {
+                    System.out.println(userService.getTasksFor(getStringValue(commandLine[1])));
+                } catch (UserNotFoundException e) {
+                    System.out.println("Oops. User with username " + commandLine[1] + " not found!");
+                }
                 break;
             default:
                 System.out.println("Unknown command");

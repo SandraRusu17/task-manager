@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addTaskFor(String taskTitle, String taskDescription, String username){
+    public void addTaskFor(String taskTitle, String taskDescription, String username) throws UserNotFoundException {
         Task task = new Task(taskTitle, taskDescription);
         User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         user.addTask(task);
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Task> getTasksFor(String username){
+    public List<Task> getTasksFor(String username) throws UserNotFoundException {
         User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         return user.getTasks();
     }

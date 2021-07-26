@@ -1,4 +1,4 @@
 package com.stefanini.taskmanager.exceptions;
 
-public class UserNotFoundException extends RuntimeException {
+public class UserNotFoundException extends Exception {
 }
