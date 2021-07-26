@@ -1,0 +1,49 @@
+package com.stefanini.taskmanager.service;
+
+import com.stefanini.taskmanager.exceptions.UserNotFoundException;
+import com.stefanini.taskmanager.model.Task;
+import com.stefanini.taskmanager.model.User;
+import com.stefanini.taskmanager.repo.UserRepository;
+
+import java.util.List;
+
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+
+    public UserServiceImpl(final UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public void createUser(String username, String firstname, String lastname){
+        if(!userRepository.findByUsername(username).isPresent()) {
+            final User user = new User(username, firstname, lastname);
+            userRepository.save(user);
+            System.out.println(user.getFormattedDetails() + " created successfully!");
+        } else {
+            System.out.println("Username " + username + " already exists!");
+        }
+
+    }
+
+    @Override
+    public void addTaskFor(String taskTitle, String taskDescription, String username){
+        Task task = new Task(taskTitle, taskDescription);
+        User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        user.addTask(task);
+        userRepository.update(user);
+        System.out.println(task + " added successfully!");
+    }
+
+    @Override
+    public List<Task> getTasksFor(String username){
+        User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        return user.getTasks();
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+}
