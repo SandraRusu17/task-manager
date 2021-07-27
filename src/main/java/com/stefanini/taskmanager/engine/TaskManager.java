@@ -44,10 +44,10 @@ public class TaskManager {
                     System.out.println("Oops. Please refer to the usage of the command : -createUser -fn='FirstName' -ln='LastName' -un='UserName'");
                     break;
                 }
-                String firstName = getStringValue(commandAndParameters[1]);
-                String lastName = getStringValue(commandAndParameters[2]);
-                String username = getStringValue(commandAndParameters[3]);
-                userService.createUser(username, firstName, lastName);
+                userService.createUser(
+                        getUsername(commandAndParameters),
+                        getFirstName(commandAndParameters),
+                        getLastName(commandAndParameters));
                 break;
             case SHOW_ALL_USERS_COMMAND:
                 System.out.println(formatUsers(userService.getAllUsers()));
@@ -57,22 +57,20 @@ public class TaskManager {
                     System.out.println("Oops. Please refer to the usage of the command : -addTask -un='UserName' -tt='TaskTitle' -td='TaskDescription'");
                     break;
                 }
-                String taskToAddUsername = getStringValue(commandAndParameters[1]);
-                String taskToAddTitle = getStringValue(commandAndParameters[2]);
-                String taskToAddDescription = getStringValue(commandAndParameters[3]);
                 try {
-                    userService.addTaskFor(taskToAddTitle, taskToAddDescription, taskToAddUsername);
+                    userService.addTaskFor(
+                            getTaskTitle(commandAndParameters),
+                            getTaskDescription(commandAndParameters),
+                            getUsername(commandAndParameters));
                 } catch (UserNotFoundException e) {
-                    System.out.println("Oops. User with username " + taskToAddUsername + " not found!");
+                    System.out.println("Oops. User with username " + getUsername(commandAndParameters) + " not found!");
                 }
                 break;
             case DELETE_TASK_COMMAND:
-                String taskToDeleteTitle = getStringValue(commandAndParameters[2]);
-                String taskToDeleteUsername = getStringValue(commandAndParameters[1]);
                 try {
-                    userService.deleteTaskByTitleFor(taskToDeleteTitle, taskToDeleteUsername);
+                    userService.deleteTaskByTitleFor(getTaskTitle(commandAndParameters), getUsername(commandAndParameters));
                 } catch (UserNotFoundException e) {
-                    System.out.println("Oops. User with username " + taskToDeleteUsername + " not found!");
+                    System.out.println("Oops. User with username " + getUsername(commandAndParameters) + " not found!");
                 }
                 break;
             case SHOW_TASKS_COMMAND:
@@ -80,11 +78,10 @@ public class TaskManager {
                     System.out.println("Oops. Please refer to the usage of the command : -showTasks -un='UserName'");
                     break;
                 }
-                String showTasksUsername = getStringValue(commandAndParameters[1]);
                 try {
-                    System.out.println(userService.getTasksFor(showTasksUsername));
+                    System.out.println(userService.getTasksFor(getUsername(commandAndParameters)));
                 } catch (UserNotFoundException e) {
-                    System.out.println("Oops. User with username " + showTasksUsername + " not found!");
+                    System.out.println("Oops. User with username " + getUsername(commandAndParameters) + " not found!");
                 }
                 break;
             default:
@@ -102,6 +99,67 @@ public class TaskManager {
     }
 
     private String getStringValue(final String s) {
-        return s.substring(s.indexOf('\'') + 1, s.lastIndexOf('\''));
+        int startIndexOfQuote = s.indexOf('\'');
+        int endIndexOfQuote = s.lastIndexOf('\'');
+        if ((startIndexOfQuote == -1 || endIndexOfQuote == -1) || (startIndexOfQuote == endIndexOfQuote)) {
+            System.out.println("Oops. Invalid parameter [" + s + "] please refer to the usage of the command : -command -un='param'. Every parameter must be enclosed in single quotes.");
+            System.exit(0);
+        }
+        return s.substring(startIndexOfQuote + 1, endIndexOfQuote);
+    }
+
+    private String getUsername(String[] commandParameters) {
+        for (String parameter : commandParameters) {
+            if (parameter.startsWith("un")) {
+                return getStringValue(parameter);
+            }
+        }
+        System.out.println("Oops. Username parameter not found, please refer to the usage : -un='UserName'");
+        System.exit(0);
+        return "";
+    }
+
+    private String getFirstName(String[] commandParameters) {
+        for (String parameter : commandParameters) {
+            if (parameter.startsWith("fn")) {
+                return getStringValue(parameter);
+            }
+        }
+        System.out.println("Oops. FirstName parameter not found, please refer to the usage : -fn='FirstName'");
+        System.exit(0);
+        return "";
+    }
+
+    private String getLastName(String[] commandParameters) {
+        for (String parameter : commandParameters) {
+            if (parameter.startsWith("ln")) {
+                return getStringValue(parameter);
+            }
+        }
+        System.out.println("Oops. LastName parameter not found, please refer to the usage : -ln='LastName'");
+        System.exit(0);
+        return "";
+    }
+
+    private String getTaskDescription(String[] commandParameters) {
+        for (String parameter : commandParameters) {
+            if (parameter.startsWith("td")) {
+                return getStringValue(parameter);
+            }
+        }
+        System.out.println("Oops. Task description parameter not found, please refer to the usage : -td='TaskDescription'");
+        System.exit(0);
+        return "";
+    }
+
+    private String getTaskTitle(String[] commandParameters) {
+        for (String parameter : commandParameters) {
+            if (parameter.startsWith("tt")) {
+                return getStringValue(parameter);
+            }
+        }
+        System.out.println("Oops. Task title parameter not found, please refer to the usage : -tt='TaskTitle'");
+        System.exit(0);
+        return "";
     }
 }
