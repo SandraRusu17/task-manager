@@ -4,16 +4,14 @@ import com.stefanini.taskmanager.exceptions.UserNotFoundException;
 import com.stefanini.taskmanager.model.Task;
 import com.stefanini.taskmanager.model.User;
 import com.stefanini.taskmanager.repo.UserRepository;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    public UserServiceImpl(final UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public void createUser(String username, String firstname, String lastname){
